@@ -1,27 +1,21 @@
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
-// Create axios instance with default config
+// Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api',
+  baseURL: '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor for authentication
+// Add authentication to all requests
 api.interceptors.request.use(
   (config) => {
-    // Add basic auth if credentials are available
-    const username = process.env.REACT_APP_API_USERNAME || 'admin';
-    const password = process.env.REACT_APP_API_PASSWORD || 'admin123';
-    
-    if (username && password) {
-      const token = btoa(`${username}:${password}`);
-      config.headers.Authorization = `Basic ${token}`;
-    }
-    
+    // Add Basic Auth header (admin:admin123)
+    const credentials = btoa('admin:admin123');
+    config.headers.Authorization = `Basic ${credentials}`;
     return config;
   },
   (error) => {
@@ -29,84 +23,55 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Add response interceptor for error handling
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
-    // Handle common errors
+    console.error('API Error:', error);
+    
     if (error.response) {
+      // Server responded with error status
       const { status, data } = error.response;
       
       switch (status) {
-        case 401:
-          toast.error('Authentication failed. Please check your credentials.');
+        case 400:
+          if (data.validationErrors) {
+            // Handle validation errors
+            Object.entries(data.validationErrors).forEach(([field, message]) => {
+              toast.error(`${field}: ${message}`);
+            });
+          } else {
+            toast.error(data.message || 'Bad request');
+          }
           break;
-        case 403:
-          toast.error('Access denied. You do not have permission to perform this action.');
+        case 401:
+          toast.error('Authentication required');
           break;
         case 404:
-          toast.error('Resource not found.');
+          toast.error(data.message || 'Resource not found');
           break;
         case 409:
-          toast.error(data.message || 'Conflict: Resource already exists.');
-          break;
-        case 422:
-          toast.error('Validation failed. Please check your input.');
+          toast.error(data.message || 'Resource already exists');
           break;
         case 500:
-          toast.error('Server error. Please try again later.');
+          toast.error('Internal server error. Please try again later.');
           break;
         default:
-          toast.error(data.message || 'An unexpected error occurred.');
+          toast.error(data.message || 'An unexpected error occurred');
       }
     } else if (error.request) {
+      // Network error
       toast.error('Network error. Please check your connection.');
     } else {
-      toast.error('An unexpected error occurred.');
+      // Other error
+      toast.error('An unexpected error occurred');
     }
     
     return Promise.reject(error);
   }
 );
-
-// Generic API service class
-export class ApiService {
-  constructor(baseEndpoint) {
-    this.baseEndpoint = baseEndpoint;
-  }
-
-  async getAll(params = {}) {
-    const response = await api.get(this.baseEndpoint, { params });
-    return response.data;
-  }
-
-  async getById(id) {
-    const response = await api.get(`${this.baseEndpoint}/${id}`);
-    return response.data;
-  }
-
-  async create(data) {
-    const response = await api.post(this.baseEndpoint, data);
-    return response.data;
-  }
-
-  async update(id, data) {
-    const response = await api.put(`${this.baseEndpoint}/${id}`, data);
-    return response.data;
-  }
-
-  async delete(id) {
-    const response = await api.delete(`${this.baseEndpoint}/${id}`);
-    return response.data;
-  }
-
-  async exists(identifier) {
-    const response = await api.get(`${this.baseEndpoint}/exists/${identifier}`);
-    return response.data;
-  }
-}
 
 export default api;
 
