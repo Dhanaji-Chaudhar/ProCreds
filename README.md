@@ -24,14 +24,16 @@ A comprehensive full-stack web application for managing DevOps platform credenti
 - **React Hot Toast 2.4.1** - Toast notifications
 - **Lucide React 0.294.0** - Icon library
 
-### Backend
+### Backend ✅ **FULLY IMPLEMENTED**
 - **Java 17+** - Runtime environment
 - **Spring Boot 3.2.0** - Application framework
-- **Spring Data MongoDB** - Data persistence
-- **Spring Security** - Authentication & authorization
-- **Spring Validation** - Input validation
-- **Lombok** - Code generation
-- **SpringDoc OpenAPI 3** - API documentation
+- **Spring Data MongoDB** - Data persistence with auditing
+- **Spring Security** - HTTP Basic Authentication with CORS
+- **Spring Validation** - Jakarta Bean Validation
+- **Lombok** - Code generation for entities and DTOs
+- **SpringDoc OpenAPI 3** - Interactive Swagger UI documentation
+- **Global Exception Handling** - Centralized error management
+- **Layered Architecture** - Controller → Service → Repository → DTO → Entity
 
 ### Database
 - **MongoDB** - Document database with separate collections per platform
@@ -133,6 +135,114 @@ ProCreds/
    ```
 
    The frontend will start on `http://localhost:3000`
+
+## 📚 API Documentation
+
+### Swagger UI
+Once the backend is running, access the interactive API documentation at:
+- **Swagger UI**: http://localhost:8080/api/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8080/api/api-docs
+
+### Authentication
+The API uses HTTP Basic Authentication:
+- **Default credentials**: `admin:admin123`
+- **Header format**: `Authorization: Basic <base64-encoded-credentials>`
+
+### GitHub Configuration Endpoints
+
+#### Get All Configurations
+```http
+GET /api/github?page=0&size=10&sortBy=accountName&sortDir=asc&search=optional
+```
+
+#### Get Configuration by ID
+```http
+GET /api/github/{id}
+```
+
+#### Get Configuration by Account Name
+```http
+GET /api/github/account/{accountName}
+```
+
+#### Create Configuration
+```http
+POST /api/github
+Content-Type: application/json
+
+{
+  "accountName": "john-doe",
+  "accessToken": "ghp_xxxxxxxxxxxxxxxxxxxx",
+  "organization": "my-org",
+  "apiUrl": "https://api.github.com",
+  "description": "Production GitHub credentials"
+}
+```
+
+#### Update Configuration
+```http
+PUT /api/github/{id}
+Content-Type: application/json
+
+{
+  "accountName": "john-doe-updated",
+  "accessToken": "ghp_yyyyyyyyyyyyyyyyyyyy",
+  "organization": "new-org",
+  "description": "Updated credentials"
+}
+```
+
+#### Delete Configuration
+```http
+DELETE /api/github/{id}
+```
+
+#### Check Account Name Exists
+```http
+GET /api/github/exists/{accountName}
+```
+
+### Response Format
+
+#### Success Response
+```json
+{
+  "id": "507f1f77bcf86cd799439011",
+  "accountName": "john-doe",
+  "accessToken": "ghp_xxxxxxxxxxxxxxxxxxxx",
+  "organization": "my-org",
+  "apiUrl": "https://api.github.com",
+  "description": "Production GitHub credentials",
+  "createdAt": "2024-01-15T10:30:00",
+  "updatedAt": "2024-01-15T10:30:00"
+}
+```
+
+#### Error Response
+```json
+{
+  "timestamp": "2024-01-15T10:30:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "GitHub configuration not found with ID: 507f1f77bcf86cd799439011",
+  "path": "/api/github/507f1f77bcf86cd799439011"
+}
+```
+
+#### Validation Error Response
+```json
+{
+  "timestamp": "2024-01-15T10:30:00",
+  "status": 400,
+  "error": "Validation Failed",
+  "message": "Input validation failed",
+  "path": "/api/github",
+  "validationErrors": {
+    "accountName": "Account name is required",
+    "accessToken": "Access token must be at least 10 characters"
+  }
+}
+```
 
 ### MongoDB Index Creation
 
@@ -305,4 +415,3 @@ For support and questions:
 - [ ] Add integration tests
 - [ ] Implement credential rotation
 - [ ] Add backup/restore functionality
-
