@@ -10,9 +10,9 @@ import jakarta.validation.constraints.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Document(collection = "gitlab_configs")
+@Document(collection = "gcp_gke_configs")
 @CompoundIndex(name = "accountName_unique", def = "{'accountName': 1}", unique = true)
-public class GitLabConfig extends BaseEntity {
+public class GcpGkeConfig extends BaseEntity {
 
     @NotBlank(message = "Account name is required")
     @Size(min = 2, max = 50, message = "Account name must be between 2 and 50 characters")
@@ -21,15 +21,13 @@ public class GitLabConfig extends BaseEntity {
     @Indexed(unique = true)
     private String accountName;
 
-    @NotBlank(message = "Personal access token is required")
-    @Size(min = 10, message = "Personal access token must be at least 10 characters")
-    private String personalAccessToken;
+    @NotBlank(message = "Cluster name is required")
+    @Size(min = 2, max = 100, message = "Cluster name must be between 2 and 100 characters")
+    private String clusterName;
 
-    @Pattern(regexp = "^[0-9]+$", message = "Group ID must be numeric")
-    private String groupId;
-
-    @Pattern(regexp = "^https?://.+", message = "API URL must be a valid HTTP or HTTPS URL")
-    private String apiUrl;
+    @NotBlank(message = "Service account JSON is required")
+    @Size(min = 100, message = "Service account JSON must be at least 100 characters")
+    private String serviceAccountJson;
 
     @Size(max = 255, message = "Description must be less than 255 characters")
     private String description;

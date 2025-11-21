@@ -10,9 +10,9 @@ import jakarta.validation.constraints.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Document(collection = "gitlab_configs")
+@Document(collection = "kubernetes_configs")
 @CompoundIndex(name = "accountName_unique", def = "{'accountName': 1}", unique = true)
-public class GitLabConfig extends BaseEntity {
+public class KubernetesConfig extends BaseEntity {
 
     @NotBlank(message = "Account name is required")
     @Size(min = 2, max = 50, message = "Account name must be between 2 and 50 characters")
@@ -21,15 +21,20 @@ public class GitLabConfig extends BaseEntity {
     @Indexed(unique = true)
     private String accountName;
 
-    @NotBlank(message = "Personal access token is required")
-    @Size(min = 10, message = "Personal access token must be at least 10 characters")
-    private String personalAccessToken;
+    @NotBlank(message = "Cluster name is required")
+    @Size(min = 2, max = 100, message = "Cluster name must be between 2 and 100 characters")
+    private String clusterName;
 
-    @Pattern(regexp = "^[0-9]+$", message = "Group ID must be numeric")
-    private String groupId;
+    @NotBlank(message = "Kubeconfig is required")
+    @Size(min = 50, message = "Kubeconfig must be at least 50 characters")
+    private String kubeconfig;
 
-    @Pattern(regexp = "^https?://.+", message = "API URL must be a valid HTTP or HTTPS URL")
-    private String apiUrl;
+    @Size(max = 50, message = "Namespace must be less than 50 characters")
+    @Pattern(regexp = "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", message = "Namespace must be a valid Kubernetes namespace")
+    private String namespace;
+
+    @Size(max = 50, message = "Region must be less than 50 characters")
+    private String region;
 
     @Size(max = 255, message = "Description must be less than 255 characters")
     private String description;
