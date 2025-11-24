@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import ConfigList from '../../components/ConfigList'
 import { bitbucketService } from '../../services/api'
+import { testConnection } from '../../services/testConnection'
 
 const BitbucketList = () => {
   const [configurations, setConfigurations] = useState([])
@@ -46,6 +47,22 @@ const BitbucketList = () => {
     }
   }
 
+  const handleTestConnection = async (platform, config) => {
+    try {
+      const testData = {
+        ...config,
+        apiUrl: config.apiUrl || 'https://api.bitbucket.org/2.0'
+      }
+      
+      const result = await testConnection(platform, testData)
+      toast.success(`Connection test successful for ${config.username}`)
+      return result
+    } catch (error) {
+      toast.error(`Connection test failed for ${config.username}: ${error.message}`)
+      throw error
+    }
+  }
+
   return (
     <ConfigList
       title="Bitbucket Configurations"
@@ -53,13 +70,15 @@ const BitbucketList = () => {
       data={configurations}
       columns={columns}
       onDelete={handleDelete}
+      onTestConnection={handleTestConnection}
+      platform="bitbucket"
       createPath="/bitbucket/create"
       editPath="/bitbucket/edit/:id"
       isLoading={isLoading}
       searchPlaceholder="Search Bitbucket configurations..."
+      showTestConnection={true}
     />
   )
 }
 
 export default BitbucketList
-

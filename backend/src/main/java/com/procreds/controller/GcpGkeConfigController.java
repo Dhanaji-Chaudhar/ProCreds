@@ -219,5 +219,53 @@ public class GcpGkeConfigController {
         boolean exists = service.existsByAccountName(accountName);
         return ResponseEntity.ok(exists);
     }
-}
 
+    @Operation(
+        summary = "Test GCP GKE connection",
+        description = "Test the connection to GCP GKE using the provided configuration"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Connection test completed"),
+        @ApiResponse(responseCode = "400", description = "Invalid configuration data"),
+        @ApiResponse(responseCode = "401", description = "Authentication required"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/test-connection")
+    public ResponseEntity<?> testConnection(
+            @Parameter(description = "GCP GKE configuration to test", required = true)
+            @Valid @RequestBody GcpGkeConfigDTO dto) {
+        
+        log.info("POST /gcp-gke/test-connection - Testing connection for account: {}", dto.getAccountName());
+        
+        try {
+            boolean isConnected = service.testConnection(dto);
+            if (isConnected) {
+                return ResponseEntity.ok(new TestConnectionResponse(true, "Connection successful", "GCP GKE cluster is accessible"));
+            } else {
+                return ResponseEntity.ok(new TestConnectionResponse(false, "Connection failed", "Unable to connect to GCP GKE cluster"));
+            }
+        } catch (Exception e) {
+            log.error("Connection test failed for account: {}", dto.getAccountName(), e);
+            return ResponseEntity.ok(new TestConnectionResponse(false, "Connection failed", e.getMessage()));
+        }
+    }
+
+    /**
+     * Response object for test connection endpoint
+     */
+    public static class TestConnectionResponse {
+        private boolean success;
+        private String message;
+        private String details;
+
+        public TestConnectionResponse(boolean success, String message, String details) {
+            this.success = success;
+            this.message = message;
+            this.details = details;
+        }
+
+        public boolean isSuccess() { return success; }
+        public String getMessage() { return message; }
+        public String getDetails() { return details; }
+    }
+}

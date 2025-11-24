@@ -219,5 +219,53 @@ public class JenkinsConfigController {
         boolean exists = service.existsByAccountName(accountName);
         return ResponseEntity.ok(exists);
     }
-}
 
+    @Operation(
+        summary = "Test Jenkins connection",
+        description = "Test the connection to Jenkins using the provided configuration"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Connection test completed"),
+        @ApiResponse(responseCode = "400", description = "Invalid configuration data"),
+        @ApiResponse(responseCode = "401", description = "Authentication required"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/test-connection")
+    public ResponseEntity<?> testConnection(
+            @Parameter(description = "Jenkins configuration to test", required = true)
+            @Valid @RequestBody JenkinsConfigDTO dto) {
+        
+        log.info("POST /jenkins/test-connection - Testing connection for account: {}", dto.getAccountName());
+        
+        try {
+            boolean isConnected = service.testConnection(dto);
+            if (isConnected) {
+                return ResponseEntity.ok(new TestConnectionResponse(true, "Connection successful", "Jenkins API is accessible"));
+            } else {
+                return ResponseEntity.ok(new TestConnectionResponse(false, "Connection failed", "Unable to connect to Jenkins API"));
+            }
+        } catch (Exception e) {
+            log.error("Connection test failed for account: {}", dto.getAccountName(), e);
+            return ResponseEntity.ok(new TestConnectionResponse(false, "Connection failed", e.getMessage()));
+        }
+    }
+
+    /**
+     * Response object for test connection endpoint
+     */
+    public static class TestConnectionResponse {
+        private boolean success;
+        private String message;
+        private String details;
+
+        public TestConnectionResponse(boolean success, String message, String details) {
+            this.success = success;
+            this.message = message;
+            this.details = details;
+        }
+
+        public boolean isSuccess() { return success; }
+        public String getMessage() { return message; }
+        public String getDetails() { return details; }
+    }
+}
