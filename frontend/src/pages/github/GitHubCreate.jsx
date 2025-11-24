@@ -3,60 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import ConfigForm from '../../components/ConfigForm'
 import { githubService } from '../../services/api'
+import { testConnection } from '../../services/testConnection'
 
 const GitHubCreate = () => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
-  const fields = [
-    {
-      name: 'accountName',
-      label: 'Account Name',
-      type: 'text',
-      placeholder: 'Enter GitHub account name',
-      validation: { required: true },
-      description: 'Unique identifier for this GitHub configuration',
-      section: 'basicInformation'
-    },
-    {
-      name: 'accessToken',
-      label: 'Access Token',
-      type: 'password',
-      placeholder: 'Enter GitHub personal access token',
-      validation: { required: true },
-      description: 'GitHub personal access token with appropriate permissions',
-      section: 'credentials'
-    },
-    {
-      name: 'organization',
-      label: 'Organization',
-      type: 'text',
-      placeholder: 'Enter organization name (optional)',
-      description: 'GitHub organization name if applicable',
-      section: 'optionalConfiguration'
-    },
-    {
-      name: 'apiUrl',
-      label: 'API URL',
-      type: 'url',
-      placeholder: 'https://api.github.com',
-      description: 'GitHub API URL (use default for GitHub.com)',
-      section: 'optionalConfiguration'
-    },
-    {
-      name: 'description',
-      label: 'Description',
-      type: 'textarea',
-      placeholder: 'Enter description for this configuration',
-      description: 'Optional description to help identify this configuration',
-      section: 'optionalConfiguration'
-    }
-  ]
-
   const handleSubmit = async (data) => {
     try {
       setIsLoading(true)
-      await githubService.create(data)
+      // Set default API URL if not provided
+      const configData = {
+        ...data,
+        apiUrl: data.apiUrl || 'https://api.github.com'
+      }
+      
+      await githubService.create(configData)
       toast.success('GitHub configuration created successfully')
       navigate('/github')
     } catch (error) {
@@ -68,6 +30,20 @@ const GitHubCreate = () => {
       console.error('Error creating configuration:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleTestConnection = async (platform, data) => {
+    try {
+      // Set default API URL for testing if not provided
+      const testData = {
+        ...data,
+        apiUrl: data.apiUrl || 'https://api.github.com'
+      }
+      
+      return await testConnection(platform, testData)
+    } catch (error) {
+      throw error
     }
   }
 
@@ -83,8 +59,9 @@ const GitHubCreate = () => {
       <ConfigForm
         title="GitHub Configuration"
         description="Configure your GitHub access token and repository settings"
-        fields={fields}
+        platform="github"
         onSubmit={handleSubmit}
+        onTestConnection={handleTestConnection}
         isLoading={isLoading}
         submitText="Create Configuration"
       />
@@ -93,4 +70,3 @@ const GitHubCreate = () => {
 }
 
 export default GitHubCreate
-

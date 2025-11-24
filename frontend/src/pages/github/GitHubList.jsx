@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import ConfigList from '../../components/ConfigList'
 import { githubService } from '../../services/api'
+import { testConnection } from '../../services/testConnection'
 
 const GitHubList = () => {
   const [configurations, setConfigurations] = useState([])
@@ -47,6 +48,22 @@ const GitHubList = () => {
     }
   }
 
+  const handleTestConnection = async (platform, config) => {
+    try {
+      const testData = {
+        ...config,
+        apiUrl: config.apiUrl || 'https://api.github.com'
+      }
+      
+      const result = await testConnection(platform, testData)
+      toast.success(`Connection test successful for ${config.accountName}`)
+      return result
+    } catch (error) {
+      toast.error(`Connection test failed for ${config.accountName}: ${error.message}`)
+      throw error
+    }
+  }
+
   return (
     <ConfigList
       title="GitHub Configurations"
@@ -54,13 +71,15 @@ const GitHubList = () => {
       data={configurations}
       columns={columns}
       onDelete={handleDelete}
+      onTestConnection={handleTestConnection}
+      platform="github"
       createPath="/github/create"
       editPath="/github/edit/:id"
       isLoading={isLoading}
       searchPlaceholder="Search GitHub configurations..."
+      showTestConnection={true}
     />
   )
 }
 
 export default GitHubList
-
