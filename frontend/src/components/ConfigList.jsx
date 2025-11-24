@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Plus, Edit, Trash2, Eye } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, Eye, Wifi } from 'lucide-react'
 import { Button } from './ui/Button'
 import { Input } from './ui/Input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card'
+import { Badge } from './ui/Badge'
+import TestConnectionButton from './TestConnectionButton'
 
 const ConfigList = ({ 
   title, 
@@ -11,11 +13,14 @@ const ConfigList = ({
   data = [], 
   columns = [], 
   onDelete, 
+  onTestConnection,
+  platform,
   createPath, 
   editPath, 
   viewPath,
   isLoading = false,
-  searchPlaceholder = "Search configurations..."
+  searchPlaceholder = "Search configurations...",
+  showTestConnection = false
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -144,14 +149,25 @@ const ConfigList = ({
                         ))}
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
+                            {showTestConnection && onTestConnection && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onTestConnection(platform, item)}
+                                className="text-blue-600 hover:text-blue-900"
+                                title="Test Connection"
+                              >
+                                <Wifi className="h-4 w-4" />
+                              </Button>
+                            )}
                             {viewPath && (
-                              <Button asChild variant="ghost" size="sm">
+                              <Button asChild variant="ghost" size="sm" title="View Details">
                                 <Link to={viewPath.replace(':id', item.id)}>
                                   <Eye className="h-4 w-4" />
                                 </Link>
                               </Button>
                             )}
-                            <Button asChild variant="ghost" size="sm">
+                            <Button asChild variant="ghost" size="sm" title="Edit Configuration">
                               <Link to={editPath.replace(':id', item.id)}>
                                 <Edit className="h-4 w-4" />
                               </Link>
@@ -161,6 +177,7 @@ const ConfigList = ({
                               size="sm"
                               onClick={() => onDelete && onDelete(item.id)}
                               className="text-red-600 hover:text-red-900"
+                              title="Delete Configuration"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -207,4 +224,3 @@ const ConfigList = ({
 }
 
 export default ConfigList
-
