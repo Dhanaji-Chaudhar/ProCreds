@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { 
   Menu, 
   X, 
@@ -13,34 +13,48 @@ import {
   Server,
   Cloud,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  User,
+  Settings,
+  LogOut,
+  Users
 } from 'lucide-react'
 import { cn } from '../utils/cn'
+import { useAuth } from '../contexts/AuthContext'
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [kubernetesOpen, setKubernetesOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, logout, isAdmin, hasPlatformAccess } = useAuth()
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'GitHub', href: '/github', icon: Github },
-    { name: 'Bitbucket', href: '/bitbucket', icon: GitBranch },
-    { name: 'GitLab', href: '/gitlab', icon: Gitlab },
-    { name: 'Jenkins', href: '/jenkins', icon: Wrench },
-    { name: 'Jira', href: '/jira', icon: Bug },
-    { name: 'SonarQube', href: '/sonarqube', icon: Shield },
-    {
+    { name: 'Dashboard', href: '/dashboard', icon: Home },
+    ...(hasPlatformAccess('github') ? [{ name: 'GitHub', href: '/github', icon: Github }] : []),
+    ...(hasPlatformAccess('bitbucket') ? [{ name: 'Bitbucket', href: '/bitbucket', icon: GitBranch }] : []),
+    ...(hasPlatformAccess('gitlab') ? [{ name: 'GitLab', href: '/gitlab', icon: Gitlab }] : []),
+    ...(hasPlatformAccess('jenkins') ? [{ name: 'Jenkins', href: '/jenkins', icon: Wrench }] : []),
+    ...(hasPlatformAccess('jira') ? [{ name: 'Jira', href: '/jira', icon: Bug }] : []),
+    ...(hasPlatformAccess('sonarqube') ? [{ name: 'SonarQube', href: '/sonarqube', icon: Shield }] : []),
+    ...(hasPlatformAccess('kubernetes') || hasPlatformAccess('aws-eks') || hasPlatformAccess('azure-aks') || hasPlatformAccess('gcp-gke') ? [{
       name: 'Kubernetes',
       icon: Server,
       children: [
-        { name: 'Generic Kubernetes', href: '/kubernetes' },
-        { name: 'AWS EKS', href: '/aws-eks' },
-        { name: 'Azure AKS', href: '/azure-aks' },
-        { name: 'GCP GKE', href: '/gcp-gke' },
+        ...(hasPlatformAccess('kubernetes') ? [{ name: 'Generic Kubernetes', href: '/kubernetes' }] : []),
+        ...(hasPlatformAccess('aws-eks') ? [{ name: 'AWS EKS', href: '/aws-eks' }] : []),
+        ...(hasPlatformAccess('azure-aks') ? [{ name: 'Azure AKS', href: '/azure-aks' }] : []),
+        ...(hasPlatformAccess('gcp-gke') ? [{ name: 'GCP GKE', href: '/gcp-gke' }] : []),
       ]
-    },
+    }] : []),
+    ...(isAdmin() ? [{ name: 'User Management', href: '/admin/users', icon: Users }] : []),
   ]
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   const isActive = (href) => {
     if (href === '/') {
@@ -168,6 +182,58 @@ const Layout = ({ children }) => {
                 DevOps Credential Manager
               </h1>
             </div>
+            
+            {/* User menu */}
+            <div className="relative">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center space-x-3 p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <div className="text-sm font-medium text-gray-900">{user?.fullName || user?.username}</div>
+                    <div className="text-xs text-gray-500">{user?.email}</div>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </div>
+              </button>
+
+              {/* Dropdown menu */}
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                  <div className="py-1">
+                    <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                      <div className="font-medium">{user?.fullName || user?.username}</div>
+                      <div className="text-xs text-gray-500">{user?.email}</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {user?.roles?.join(', ')}
+                      </div>
+                    </div>
+                    <Link
+                      to="/profile"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <Settings className="w-4 h-4 mr-3" />
+                      Profile Settings
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false)
+                        handleLogout()
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <LogOut className="w-4 h-4 mr-3" />
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -185,4 +251,3 @@ const Layout = ({ children }) => {
 }
 
 export default Layout
-
