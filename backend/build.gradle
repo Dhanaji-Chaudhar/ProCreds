@@ -1,0 +1,111 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.procreds'
+version = '1.0.0'
+description = 'DevOps Platform Credential Manager Backend'
+
+java {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    springdocVersion = '2.2.0'
+    jjwtVersion = '0.12.3'
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // JWT Dependencies
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+    // Database
+    runtimeOnly 'com.h2database:h2'
+
+    // SpringDoc OpenAPI 3
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Test Dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Spring Boot plugin configuration
+springBoot {
+    buildInfo()
+}
+
+// Exclude Lombok from the final JAR
+jar {
+    enabled = false
+    archiveClassifier = ''
+}
+
+bootJar {
+    enabled = true
+    archiveClassifier = ''
+    excludes = ['**/lombok/**']
+}
+
+// Task to clean build directory
+clean {
+    delete 'build'
+}
+
+// Custom task for running the application (equivalent to mvn spring-boot:run)
+task bootRunDev(type: org.springframework.boot.gradle.tasks.run.BootRun) {
+    group = 'application'
+    description = 'Run the Spring Boot application with development profile'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.procreds.ProCredsApplication'
+    args = ['--spring.profiles.active=dev']
+}
+
+// Task for building without tests (equivalent to mvn clean package -DskipTests)
+task buildNoTests {
+    group = 'build'
+    description = 'Build the application without running tests'
+    dependsOn 'clean', 'bootJar'
+    tasks.findByName('bootJar').mustRunAfter 'clean'
+}
+
+// Task for compiling only (equivalent to mvn clean compile)
+task compileAll {
+    group = 'build'
+    description = 'Clean and compile all source code'
+    dependsOn 'clean', 'compileJava'
+    tasks.findByName('compileJava').mustRunAfter 'clean'
+}
+
