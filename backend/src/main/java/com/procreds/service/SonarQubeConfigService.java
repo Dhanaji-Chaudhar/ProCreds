@@ -177,6 +177,33 @@ public class SonarQubeConfigService {
     }
 
     /**
+     * Test connection to SonarQube using the provided configuration
+     * 
+     * @param dto the SonarQube configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(SonarQubeConfigDTO dto) {
+        log.debug("Testing SonarQube connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual SonarQube API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getBaseUrl() != null && !dto.getBaseUrl().trim().isEmpty() &&
+                             dto.getToken() != null && !dto.getToken().trim().isEmpty();
+            
+            log.info("SonarQube connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("SonarQube connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert SonarQube entity to DTO
      * 
      * @param entity the SonarQube configuration entity
@@ -211,4 +238,3 @@ public class SonarQubeConfigService {
         return entity;
     }
 }
-

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -182,7 +183,7 @@ public class PasswordService {
     public void cleanupExpiredResetTokens() {
         log.info("Cleaning up expired password reset tokens");
         
-        List<User> usersWithExpiredTokens = userRepository.findUsersWithExpiredResetTokens();
+        List<User> usersWithExpiredTokens = userRepository.findUsersWithExpiredResetTokens(LocalDateTime.now());
         
         for (User user : usersWithExpiredTokens) {
             user.setPasswordResetToken(null);
@@ -199,4 +200,3 @@ public class PasswordService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
     }
 }
-

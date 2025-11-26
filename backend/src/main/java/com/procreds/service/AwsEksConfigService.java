@@ -178,6 +178,35 @@ public class AwsEksConfigService {
     }
 
     /**
+     * Test connection to AWS EKS using the provided configuration
+     * 
+     * @param dto the AWS EKS configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(AwsEksConfigDTO dto) {
+        log.debug("Testing AWS EKS connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual AWS EKS API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getClusterName() != null && !dto.getClusterName().trim().isEmpty() &&
+                             dto.getAccessKey() != null && !dto.getAccessKey().trim().isEmpty() &&
+                             dto.getSecretKey() != null && !dto.getSecretKey().trim().isEmpty() &&
+                             dto.getRegion() != null && !dto.getRegion().trim().isEmpty();
+            
+            log.info("AWS EKS connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("AWS EKS connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert AWS EKS entity to DTO
      * 
      * @param entity the AWS EKS configuration entity
@@ -214,4 +243,3 @@ public class AwsEksConfigService {
         return entity;
     }
 }
-

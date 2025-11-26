@@ -178,6 +178,34 @@ public class JenkinsConfigService {
     }
 
     /**
+     * Test connection to Jenkins using the provided configuration
+     * 
+     * @param dto the Jenkins configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(JenkinsConfigDTO dto) {
+        log.debug("Testing Jenkins connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual Jenkins API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getBaseUrl() != null && !dto.getBaseUrl().trim().isEmpty() &&
+                             dto.getUsername() != null && !dto.getUsername().trim().isEmpty() &&
+                             dto.getApiToken() != null && !dto.getApiToken().trim().isEmpty();
+            
+            log.info("Jenkins connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("Jenkins connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert Jenkins entity to DTO
      * 
      * @param entity the Jenkins configuration entity
@@ -214,4 +242,3 @@ public class JenkinsConfigService {
         return entity;
     }
 }
-

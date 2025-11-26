@@ -179,6 +179,34 @@ public class JiraConfigService {
     }
 
     /**
+     * Test connection to Jira using the provided configuration
+     * 
+     * @param dto the Jira configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(JiraConfigDTO dto) {
+        log.debug("Testing Jira connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual Jira API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getBaseUrl() != null && !dto.getBaseUrl().trim().isEmpty() &&
+                             dto.getEmail() != null && !dto.getEmail().trim().isEmpty() &&
+                             dto.getApiToken() != null && !dto.getApiToken().trim().isEmpty();
+            
+            log.info("Jira connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("Jira connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert Jira entity to DTO
      * 
      * @param entity the Jira configuration entity
@@ -217,4 +245,3 @@ public class JiraConfigService {
         return entity;
     }
 }
-

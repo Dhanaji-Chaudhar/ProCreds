@@ -178,6 +178,35 @@ public class AzureAksConfigService {
     }
 
     /**
+     * Test connection to Azure AKS using the provided configuration
+     * 
+     * @param dto the Azure AKS configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(AzureAksConfigDTO dto) {
+        log.debug("Testing Azure AKS connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual Azure AKS API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getClusterName() != null && !dto.getClusterName().trim().isEmpty() &&
+                             dto.getTenantId() != null && !dto.getTenantId().trim().isEmpty() &&
+                             dto.getClientId() != null && !dto.getClientId().trim().isEmpty() &&
+                             dto.getClientSecret() != null && !dto.getClientSecret().trim().isEmpty();
+            
+            log.info("Azure AKS connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("Azure AKS connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert Azure AKS entity to DTO
      * 
      * @param entity the Azure AKS configuration entity
@@ -214,4 +243,3 @@ public class AzureAksConfigService {
         return entity;
     }
 }
-

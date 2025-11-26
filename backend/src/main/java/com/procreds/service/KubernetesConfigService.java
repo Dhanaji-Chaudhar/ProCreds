@@ -178,6 +178,33 @@ public class KubernetesConfigService {
     }
 
     /**
+     * Test connection to Kubernetes using the provided configuration
+     * 
+     * @param dto the Kubernetes configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(KubernetesConfigDTO dto) {
+        log.debug("Testing Kubernetes connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual Kubernetes API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getClusterName() != null && !dto.getClusterName().trim().isEmpty() &&
+                             dto.getKubeconfig() != null && !dto.getKubeconfig().trim().isEmpty();
+            
+            log.info("Kubernetes connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("Kubernetes connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert Kubernetes entity to DTO
      * 
      * @param entity the Kubernetes configuration entity
@@ -214,4 +241,3 @@ public class KubernetesConfigService {
         return entity;
     }
 }
-

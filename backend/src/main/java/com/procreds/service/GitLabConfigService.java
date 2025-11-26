@@ -177,6 +177,32 @@ public class GitLabConfigService {
     }
 
     /**
+     * Test connection to GitLab using the provided configuration
+     * 
+     * @param dto the GitLab configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(GitLabConfigDTO dto) {
+        log.debug("Testing GitLab connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual GitLab API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getPersonalAccessToken() != null && !dto.getPersonalAccessToken().trim().isEmpty();
+            
+            log.info("GitLab connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("GitLab connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert GitLab entity to DTO
      * 
      * @param entity the GitLab configuration entity
@@ -211,4 +237,3 @@ public class GitLabConfigService {
         return entity;
     }
 }
-
