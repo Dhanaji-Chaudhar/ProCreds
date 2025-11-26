@@ -312,10 +312,9 @@ public class UserService {
         UserProfileResponse.PlatformPermissionResponse response = new UserProfileResponse.PlatformPermissionResponse();
         response.setPlatform(permission.getPlatform());
         response.setPermissionLevel(permission.getPermissionLevel().name());
-        response.setEnabled(permission.getEnabled());
+        response.setEnabled(permission.isEnabled());
         response.setGrantedAt(permission.getCreatedAt());
         response.setGrantedBy(permission.getGrantedBy() != null ? permission.getGrantedBy().getUsername() : null);
         return response;
     }
 }
-
