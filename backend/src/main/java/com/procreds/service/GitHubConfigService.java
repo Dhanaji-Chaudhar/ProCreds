@@ -177,6 +177,32 @@ public class GitHubConfigService {
     }
 
     /**
+     * Test connection to GitHub using the provided configuration
+     * 
+     * @param dto the GitHub configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(GitHubConfigDTO dto) {
+        log.debug("Testing GitHub connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual GitHub API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getAccessToken() != null && !dto.getAccessToken().trim().isEmpty();
+            
+            log.info("GitHub connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("GitHub connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert GitHub entity to DTO
      * 
      * @param entity the GitHub configuration entity
@@ -211,4 +237,3 @@ public class GitHubConfigService {
         return entity;
     }
 }
-

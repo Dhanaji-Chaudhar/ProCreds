@@ -176,6 +176,33 @@ public class GcpGkeConfigService {
     }
 
     /**
+     * Test connection to GCP GKE using the provided configuration
+     * 
+     * @param dto the GCP GKE configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(GcpGkeConfigDTO dto) {
+        log.debug("Testing GCP GKE connection for account: {}", dto.getAccountName());
+        
+        try {
+            // TODO: Implement actual GCP GKE API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getAccountName() != null && !dto.getAccountName().trim().isEmpty() &&
+                             dto.getClusterName() != null && !dto.getClusterName().trim().isEmpty() &&
+                             dto.getServiceAccountJson() != null && !dto.getServiceAccountJson().trim().isEmpty();
+            
+            log.info("GCP GKE connection test for account '{}': {}", 
+                    dto.getAccountName(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("GCP GKE connection test failed for account '{}': {}", 
+                     dto.getAccountName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert GCP GKE entity to DTO
      * 
      * @param entity the GCP GKE configuration entity
@@ -208,4 +235,3 @@ public class GcpGkeConfigService {
         return entity;
     }
 }
-

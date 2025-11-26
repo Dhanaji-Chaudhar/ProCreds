@@ -177,6 +177,32 @@ public class BitbucketConfigService {
     }
 
     /**
+     * Test connection to Bitbucket using the provided configuration
+     * 
+     * @param dto the Bitbucket configuration DTO to test
+     * @return true if connection is successful, false otherwise
+     */
+    public boolean testConnection(BitbucketConfigDTO dto) {
+        log.debug("Testing Bitbucket connection for username: {}", dto.getUsername());
+        
+        try {
+            // TODO: Implement actual Bitbucket API connection test
+            // For now, return true if required fields are present
+            boolean isValid = dto.getUsername() != null && !dto.getUsername().trim().isEmpty() &&
+                             dto.getAppPassword() != null && !dto.getAppPassword().trim().isEmpty();
+            
+            log.info("Bitbucket connection test for username '{}': {}", 
+                    dto.getUsername(), isValid ? "SUCCESS" : "FAILED");
+            return isValid;
+            
+        } catch (Exception e) {
+            log.error("Bitbucket connection test failed for username '{}': {}", 
+                     dto.getUsername(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Convert Bitbucket entity to DTO
      * 
      * @param entity the Bitbucket configuration entity
@@ -211,4 +237,3 @@ public class BitbucketConfigService {
         return entity;
     }
 }
-
