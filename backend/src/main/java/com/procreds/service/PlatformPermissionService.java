@@ -113,7 +113,7 @@ public class PlatformPermissionService {
         
         // Store old values for audit
         UserPlatformPermission.PermissionLevel oldLevel = permission.getPermissionLevel();
-        boolean oldEnabled = permission.getEnabled();
+        boolean oldEnabled = permission.isEnabled();
         
         // Update permission
         permission.setPermissionLevel(permissionLevel);
@@ -261,4 +261,3 @@ public class PlatformPermissionService {
         ).contains(platform);
     }
 }
-

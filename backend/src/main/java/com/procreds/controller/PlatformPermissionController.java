@@ -306,7 +306,7 @@ public class PlatformPermissionController {
             permission.getPlatform(),
             permission.getPermissionLevel().name(),
             permission.getPermissionLevel().getDisplayName(),
-            permission.getEnabled(),
+            permission.isEnabled(),
             permission.getCreatedAt(),
             permission.getUpdatedAt(),
             permission.getGrantedBy() != null ? permission.getGrantedBy().getUsername() : null
@@ -323,7 +323,7 @@ public class PlatformPermissionController {
             user.getEnabled(),
             permission.getPermissionLevel().name(),
             permission.getPermissionLevel().getDisplayName(),
-            permission.getEnabled(),
+            permission.isEnabled(),
             permission.getCreatedAt(),
             permission.getGrantedBy() != null ? permission.getGrantedBy().getUsername() : null
         );
@@ -454,4 +454,3 @@ public class PlatformPermissionController {
         public String getDescription() { return description; }
     }
 }
-
