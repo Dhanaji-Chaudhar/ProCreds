@@ -1,14 +1,14 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import { AuthProvider } from './contexts/AuthContext.jsx'
-import ProtectedRoute from './components/ProtectedRoute.jsx'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
-import LoginPage from './pages/auth/LoginPage.jsx'
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage.jsx'
-import ResetPasswordPage from './pages/auth/ResetPasswordPage.jsx'
-import UserManagementPage from './pages/admin/UserManagementPage.jsx'
+import LoginPage from './pages/auth/LoginPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from './pages/auth/ResetPasswordPage'
+import UserManagementPage from './pages/admin/UserManagementPage'
 import GitHubList from './pages/github/GitHubList'
 import GitHubCreate from './pages/github/GitHubCreate'
 import GitHubEdit from './pages/github/GitHubEdit'
@@ -40,7 +40,7 @@ import GcpGkeListPage from './pages/gcp-gke/GcpGkeListPage'
 import GcpGkeCreatePage from './pages/gcp-gke/GcpGkeCreatePage'
 import GcpGkeEditPage from './pages/gcp-gke/GcpGkeEditPage'
 
-function App() {
+function App(): JSX.Element {
   return (
     <AuthProvider>
       <Router>

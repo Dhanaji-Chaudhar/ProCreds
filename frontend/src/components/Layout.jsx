@@ -20,7 +20,7 @@ import {
   Users
 } from 'lucide-react'
 import { cn } from '../utils/cn'
-import { useAuth } from '../contexts/AuthContext.jsx'
+import { useAuth } from '../contexts/AuthContext'
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
