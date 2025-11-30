@@ -1,8 +1,17 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext.jsx';
+import { useAuth } from '../contexts/AuthContext';
+import { UserRole } from '../types';
 
-const ProtectedRoute = ({ 
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requireAuth?: boolean;
+  requiredRole?: UserRole | null;
+  requiredPlatform?: string | null;
+  redirectTo?: string;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   requireAuth = true, 
   requiredRole = null, 
